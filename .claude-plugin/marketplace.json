@@ -1,0 +1,13 @@
+{
+  "name": "compactor",
+  "owner": {
+    "name": "manuelfp88"
+  },
+  "description": "compactor: un botón para compactar la conversación de Claude Code desde el pie del cuadro de escribir.",
+  "plugins": [
+    {
+      "name": "compactor",
+      "source": "./"
+    }
+  ]
+}
