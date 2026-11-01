@@ -54,6 +54,8 @@ export const register: Register = on => {
   // En el pie del cuadro de texto, junto a los modos de la sesión.
   on('ui.render', { component: 'SessionMode' }, async ($, e, next) => {
     const { Box, Button, Text } = $.ui.resolve(e)
+    // Lo que dibujan debajo la app y otros mods, para no taparlo.
+    const drawn = await next(e)
     const pct = await read($, percent)
     const busy = await read($, isCompacting)
     const tok = await read($, tokens)
@@ -76,7 +78,7 @@ export const register: Register = on => {
 
     return (
       <Box>
-        {e.props.modes.length > 0 && <Text dimColor>{e.props.modes.join(' & ')}{'  '}</Text>}
+        {drawn}
         <Button key="compactar" plain dimColor={!isEnabled} onPress={compact}>
           {ICONO}{' '}
           <Text color={isEnabled ? 'claude' : 'inactive'} bold={isEnabled}>{shown}</Text>
