@@ -1,7 +1,7 @@
 {
   "name": "compactor",
-  "version": "0.1.1",
-  "description": "Botón en el pie del cuadro de escribir que compacta la conversación cuando Claude no trabaja y el contexto pasa del 75 %, con los tokens usados al lado.",
+  "version": "0.1.2",
+  "description": "Botón en el pie del cuadro de escribir que compacta la conversación cuando Claude no trabaja y el contexto pasa del 75 %; en gris, al pulsarlo muestra los tokens.",
   "types": "./types/index.d.ts",
   "author": {
     "name": "manuelfp88"

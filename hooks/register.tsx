@@ -63,7 +63,11 @@ export const register: Register = on => {
     const shown = busy ? '…' : pct === null ? '–' : `${Math.round(pct)} %`
 
     const compact = async () => {
-      if (!isEnabled) return
+      // Sin nada que compactar, el clic enseña los tokens: en el pie no caben.
+      if (!isEnabled) {
+        if (tok) $.ui.toast(`${short(tok.used)} / ${short(tok.window)} tokens`)
+        return
+      }
       await update($, isCompacting, () => true)
       try {
         const out = await $.session.compact()
@@ -83,7 +87,6 @@ export const register: Register = on => {
           {ICONO}{' '}
           <Text color={isEnabled ? 'claude' : 'inactive'} bold={isEnabled}>{shown}</Text>
         </Button>
-        {tok && <Text dimColor>{'  '}{short(tok.used)} / {short(tok.window)}</Text>}
       </Box>
     )
   })
