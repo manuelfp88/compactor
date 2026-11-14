@@ -5,15 +5,19 @@ import type { EngineInterface, Register } from 'claude-code'
 const UMBRAL = 75
 // Un torno de apretar: comprimir.
 const ICONO = '🗜️'
+const ICONO_SEMANAL = '📅'
 
 const percent = atom({ plugin: 'compactor', key: 'percent' } as const, null)
 const tokens = atom({ plugin: 'compactor', key: 'tokens' } as const, null)
+const weekly = atom({ plugin: 'compactor', key: 'weekly' } as const, null)
 const isCompacting = atom({ plugin: 'compactor', key: 'isCompacting' } as const, false)
 // El pie no dice si Claude trabaja: va de enviar un mensaje a acabar el turno.
 const isWorking = atom({ plugin: 'compactor', key: 'isWorking' } as const, false)
 
 const refresh = async ($: EngineInterface) => {
-  const { context } = await $.session.usage()
+  const { context, rateLimits } = await $.session.usage()
+  const week = rateLimits.find(limit => limit.kind === 'seven_day')
+  await update($, weekly, () => week?.percentUsed ?? null)
   await update($, percent, () => context.percent ?? null)
   await update($, tokens, () => context.tokens === undefined ? null : { used: context.tokens, window: context.window })
 }
@@ -59,8 +63,9 @@ export const register: Register = on => {
     const pct = await read($, percent)
     const busy = await read($, isCompacting)
     const tok = await read($, tokens)
+    const week = await read($, weekly)
     const isEnabled = !(await read($, isWorking)) && !busy && pct !== null && pct >= UMBRAL
-    const shown = busy ? '…' : pct === null ? '–' : `${Math.round(pct)} %`
+    const shown = busy ? '…' : pct === null ? '–' : `${Math.round(pct)}`
 
     const compact = async () => {
       // Sin nada que compactar, el clic enseña los tokens: en el pie no caben.
@@ -84,7 +89,7 @@ export const register: Register = on => {
       <Box>
         {drawn}
         <Button key="compactar" plain dimColor={!isEnabled} onPress={compact}>
-          {ICONO}{' '}
+          {ICONO_SEMANAL}{week === null ? '–' : Math.round(week)}{' '}{ICONO}
           <Text color={isEnabled ? 'claude' : 'inactive'} bold={isEnabled}>{shown}</Text>
         </Button>
       </Box>
